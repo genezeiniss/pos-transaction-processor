@@ -1,0 +1,66 @@
+payment-method-modifiers:
+  cash:
+    points-multiplier: 0.05
+    price-modifier-range:
+      min: 0.9
+      max: 1.0
+  cash-on-delivery:
+    points-multiplier: 0.05
+    price-modifier-range:
+      min: 1.0
+      max: 1.02
+    required-fields:
+      - courier
+    allowed-couriers:
+      - yamato
+      - sagawa
+  visa:
+    points-multiplier: 0.03
+    price-modifier-range:
+      min: 0.95
+      max: 1.0
+  mastercard:
+    points-multiplier: 0.03
+    price-modifier-range:
+      min: 0.95
+      max: 1.0
+  amex:
+    points-multiplier: 0.02
+    price-modifier-range:
+      min: 0.98
+      max: 1.01
+  jcb:
+    points-multiplier: 0.05
+    price-modifier-range:
+      min: 0.95
+      max: 1.0
+  line_pay:
+    points-multiplier: 0.01
+    price-modifier-range:
+      min: 1.0
+      max: 1.0
+  paypay:
+    points-multiplier: 0.01
+    price-modifier-range:
+      min: 1.0
+      max: 1.0
+  points:
+    points-multiplier: 0
+    price-modifier-range:
+      min: 1.0
+      max: 1.0
+  grab_pay:
+    points-multiplier: 0.01
+    price-modifier-range:
+      min: 1.0
+      max: 1.0
+  bank-transfer:
+    points-multiplier: 0
+    price-modifier-range:
+      min: 1.0
+      max: 1.0
+  cheque:
+    points-multiplier: 0
+    price-modifier-range:
+      min: 0.9
+      max: 1.0

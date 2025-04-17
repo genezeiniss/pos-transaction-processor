@@ -1,0 +1,88 @@
+package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
+
+import com.genezeiniss.pos_transaction_processor.configuration.BankTransferProperties;
+import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
+import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class BankTransferTrxProcessorTest {
+
+    private static BankTransferTrxProcessor transactionProcessor;
+    private final PaymentMethod paymentMethod = PaymentMethod.BANK_TRANSFER;
+
+    @BeforeAll
+    static void setup() {
+        BankTransferProperties properties = new BankTransferProperties();
+        properties.setPointsMultiplier(0);
+        properties.setPriceModifierRange(new PriceModifierRange(1.0, 1.0));
+
+        transactionProcessor = new BankTransferTrxProcessor(properties);
+    }
+
+    private static Stream<Arguments> arguments() {
+        return Stream.of(
+                Arguments.of("additional info is missing",
+                        null,
+                        List.of("Missing required field: bank", "Missing required field: accountNumber")),
+                Arguments.of("bank is missing",
+                        Map.of("accountNumber", "123456"),
+                        List.of("Missing required field: bank")),
+                Arguments.of("account number is missing",
+                        Map.of("bank", "Bank of America"),
+                        List.of("Missing required field: accountNumber")),
+                Arguments.of("invalid iban",
+                        Map.of("bank", "Bank of America", "accountNumber", "12AB3456789012"),
+                        List.of("Invalid accountNumber value")),
+                Arguments.of("invalid bank and blank account number",
+                        Map.of("bank", "Chase&Co", "accountNumber", " "),
+                        List.of("Invalid bank value", "Missing required field: accountNumber")),
+                Arguments.of("empty bank and invalid account number",
+                        Map.of("bank", "", "accountNumber", "ABC123456"),
+                        List.of("Missing required field: bank", "Invalid accountNumber value")));
+    }
+
+    @ParameterizedTest
+    @MethodSource("arguments")
+    @DisplayName("validate transaction with invalid required fields")
+    public void validationFailure(String scenario, Map<String, String> additionalInfo, List<String> expectedErrors) {
+
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, additionalInfo);
+        List<String> errors = transactionProcessor.validateTransaction(transaction);
+
+        assertEquals(expectedErrors.size(), errors.size(), "number of errors");
+        assertTrue(errors.containsAll(expectedErrors), "error messages");
+    }
+
+    @Test
+    @DisplayName("validate transaction: happy flow")
+    public void validateTransaction() {
+
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, Map.of("bank", "Bank of America", "accountNumber", "GB29NWBK60161331926819"));
+        List<String> errors = transactionProcessor.validateTransaction(transaction);
+        assertTrue(errors.isEmpty());
+    }
+
+    @Test
+    @DisplayName("process transaction: happy flow")
+    public void processTransaction() {
+
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, Map.of("bank", "Bank of America", "accountNumber", "GB29NWBK60161331926819"));
+        transactionProcessor.processTransaction(transaction);
+
+        assertEquals(100.00, transaction.getFinalPrice(), "final price");
+        assertEquals(0, transaction.getPoints(), "points");
+    }
+}
