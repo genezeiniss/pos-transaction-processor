@@ -59,11 +59,6 @@ Designed for use across shops and online stores, which will integrate with the s
 | BANK_TRANSFER        | `bank`, `accountNumber`       | Must be exactly 1.0        |
 | CHEQUE               | `bank`, `chequeNumber`        | 0.9 ≤ x ≤ 1.0              |
 
-**Custom Errors**:
-- `Missing required field`: "Missing required fields for payment method %s: %s, %s..."
-- `Invalid price modifier`: "Invalid price modifier for payment method %s. Expected range: %s to %s"
-- `Invalid format`: "Invalid format of %s for payment method %s"
-
 **Business Logic**:
 - `finalPrice = price × priceModifier`
 - `points = price × method-specific multiplier`
