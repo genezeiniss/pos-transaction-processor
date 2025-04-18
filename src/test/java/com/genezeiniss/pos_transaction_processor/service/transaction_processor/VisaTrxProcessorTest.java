@@ -1,9 +1,10 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.VisaProperties;
+import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.VisaProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +17,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class VisaTrxProcessorTest {
 
@@ -57,19 +57,19 @@ public class VisaTrxProcessorTest {
     @DisplayName("validate transaction with invalid required fields and invalid price modifier")
     public void validationFailure(String scenario, List<TransactionMetadata> metadata, String expectedError) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.94"), metadata);
-        List<String> errors = transactionProcessor.validateTransaction(transaction);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.94"));
+        ValidationException exception = assertThrows(ValidationException.class,
+                () -> transactionProcessor.validateTransactionOrException(transaction, metadata));
 
-        assertEquals(2, errors.size(), "number of errors");
-        assertTrue(errors.containsAll(List.of(expectedError, "Invalid price modifier. Expected range: 0.95 to 1.0")), "error messages");
+        assertEquals(String.format("%s; Invalid price modifier. Expected range: 0.95 to 1.0", expectedError), exception.getMessage());
     }
 
     @Test
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"),
-                List.of(TransactionFixture.stubTransactionMetadata("last4", "1234")));
-        List<String> errors = transactionProcessor.validateTransaction(transaction);
-        assertTrue(errors.isEmpty());
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"));
+        var metadata = List.of(TransactionFixture.stubTransactionMetadata("last4", "1234"));
+        assertDoesNotThrow(() -> transactionProcessor.validateTransactionOrException(transaction, metadata));
+
     }
 }

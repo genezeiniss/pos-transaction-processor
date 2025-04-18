@@ -1,6 +1,6 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.GrabPayProperties;
+import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.GrabPayProperties;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,6 +1,6 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.*;
+import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.*;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
 import org.springframework.stereotype.Component;
 

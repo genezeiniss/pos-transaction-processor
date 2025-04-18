@@ -1,9 +1,10 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.PaymentMethodProperties;
+import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.PaymentMethodProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.Transaction;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
+import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
@@ -16,11 +17,15 @@ public abstract class TransactionProcessor {
 
     protected final PaymentMethodProperties properties;
 
-    public List<String> validateTransaction(Transaction transaction) {
+    public void validateTransactionOrException(Transaction transaction,
+                                               List<TransactionMetadata> transactionMetadata) {
         List<String> errors = new ArrayList<>();
-        validateRequiredFields(transaction.getMetadata(), errors);
+        validateRequiredFields(transactionMetadata, errors);
         validatePriceModifier(transaction.getPriceModifier(), errors);
-        return errors;
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     public void processTransaction(Transaction transaction) {

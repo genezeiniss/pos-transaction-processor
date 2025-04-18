@@ -1,6 +1,6 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.BankTransferProperties;
+import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.BankTransferProperties;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.utils.ValidatorUtils;
 import org.springframework.stereotype.Component;

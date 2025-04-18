@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TransactionMetadata extends BaseEntity {
 
+    private String transactionId;
     private String attribute;
     private String data;
 }

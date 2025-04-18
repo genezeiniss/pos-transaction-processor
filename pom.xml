@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<maven.version>3.5.2</maven.version>
 	</properties>
 
 	<dependencies>
@@ -42,6 +43,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-jooq</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 
 		<!-- testing -->
@@ -116,6 +122,29 @@
 						<version>3.19.21</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+
+			<!-- Failsafe for integration tests -->
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven.version}</version>
+				<configuration>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<testSourceDirectory>
+						${project.basedir}/src/integration-test/java/com/genezeiniss/pos_transaction_processor/
+					</testSourceDirectory>
+					<argLine>-XX:+EnableDynamicAgentLoading</argLine>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
