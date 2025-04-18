@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +24,8 @@ public class CashTrxProcessorTest {
     @BeforeAll
     static void setup() {
         CashProperties properties = new CashProperties();
-        properties.setPointsMultiplier(0.05);
-        properties.setPriceModifierRange(new PriceModifierRange(0.9, 1.0));
+        properties.setPointsMultiplier(new BigDecimal("0.05"));
+        properties.setPriceModifierRange(new PriceModifierRange(new BigDecimal("0.9"), new BigDecimal("1.0")));
 
         transactionProcessor = new CashTrxProcessor(properties);
     }
@@ -32,10 +33,10 @@ public class CashTrxProcessorTest {
     @Test
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 0.95, null);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.95"), null);
         transactionProcessor.processTransaction(transaction);
 
-        assertEquals(95, transaction.getFinalPrice(), "final price");
+        assertEquals(new BigDecimal("95.00"), transaction.getFinalPrice(), "final price");
         assertEquals(5, transaction.getPoints(), "points");
     }
 
@@ -45,7 +46,7 @@ public class CashTrxProcessorTest {
     @DisplayName("validate transaction: invalid price modifier")
     public void invalidPriceModifier(double priceModifier) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, priceModifier, Map.of("courier", "courier1"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, BigDecimal.valueOf(priceModifier), Map.of("courier", "courier1"));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(1, errors.size(), "number of errors");

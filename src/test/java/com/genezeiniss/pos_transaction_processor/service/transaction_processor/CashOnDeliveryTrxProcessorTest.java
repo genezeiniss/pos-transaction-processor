@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -27,8 +28,8 @@ public class CashOnDeliveryTrxProcessorTest {
     @BeforeAll
     static void setup() {
         CashOnDeliveryProperties properties = new CashOnDeliveryProperties();
-        properties.setPointsMultiplier(0.05);
-        properties.setPriceModifierRange(new PriceModifierRange(1.0, 1.02));
+        properties.setPointsMultiplier(new BigDecimal("0.05"));
+        properties.setPriceModifierRange(new PriceModifierRange(new BigDecimal("1.0"), new BigDecimal("1.02")));
         properties.setAllowedCouriers(List.of("courier1", "courier2"));
 
         transactionProcessor = new CashOnDeliveryTrxProcessor(properties);
@@ -55,7 +56,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction with invalid required fields")
     public void validationFailure(String scenario, Map<String, String> additionalInfo, String expectedError) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, additionalInfo);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"), additionalInfo);
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(1, errors.size(), "number of errors");
@@ -66,7 +67,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.01, Map.of("courier", "courier1"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"), Map.of("courier", "courier1"));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }
@@ -75,10 +76,10 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("process transaction: happy flow")
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.01, Map.of("courier", "courier1"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"), Map.of("courier", "courier1"));
         transactionProcessor.processTransaction(transaction);
 
-        assertEquals(101.00, transaction.getFinalPrice(), "final price");
+        assertEquals(new BigDecimal("101.00"), transaction.getFinalPrice(), "final price");
         assertEquals(5, transaction.getPoints(), "points");
     }
 
@@ -87,7 +88,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction: invalid price modifier")
     public void invalidPriceModifier(double priceModifier) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, priceModifier, Map.of("courier", "courier1"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, BigDecimal.valueOf(priceModifier), Map.of("courier", "courier1"));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(1, errors.size(), "number of errors");

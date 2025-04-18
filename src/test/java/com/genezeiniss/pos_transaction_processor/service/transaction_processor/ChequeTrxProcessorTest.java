@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -26,8 +27,8 @@ public class ChequeTrxProcessorTest {
     @BeforeAll
     static void setup() {
         ChequeProperties properties = new ChequeProperties();
-        properties.setPointsMultiplier(0);
-        properties.setPriceModifierRange(new PriceModifierRange(0.9, 1.0));
+        properties.setPointsMultiplier(new BigDecimal("0"));
+        properties.setPriceModifierRange(new PriceModifierRange(new BigDecimal("0.9"), new BigDecimal("1.0")));
 
         transactionProcessor = new ChequeTrxProcessor(properties);
     }
@@ -56,7 +57,7 @@ public class ChequeTrxProcessorTest {
     @DisplayName("validate transaction with invalid required fields")
     public void validationFailure(String scenario, Map<String, String> additionalInfo, List<String> expectedErrors) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, additionalInfo);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"), additionalInfo);
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(expectedErrors.size(), errors.size(), "number of errors");
@@ -67,7 +68,7 @@ public class ChequeTrxProcessorTest {
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0, Map.of("bank", "Bank of America", "chequeNumber", "123456789012"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"), Map.of("bank", "Bank of America", "chequeNumber", "123456789012"));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }
@@ -76,10 +77,10 @@ public class ChequeTrxProcessorTest {
     @DisplayName("process transaction: happy flow")
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 0.99, Map.of("bank", "Bank of America", "chequeNumber", "123456789012"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.99"), Map.of("bank", "Bank of America", "chequeNumber", "123456789012"));
         transactionProcessor.processTransaction(transaction);
 
-        assertEquals(99.00, transaction.getFinalPrice(), "final price");
+        assertEquals(new BigDecimal("99.00"), transaction.getFinalPrice(), "final price");
         assertEquals(0, transaction.getPoints(), "points");
     }
 }

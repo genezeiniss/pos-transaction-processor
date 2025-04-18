@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction with valid transaction")
     void processTransaction() {
-        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0, null);
+        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, new BigDecimal("1.0"), null);
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.CASH)).thenReturn(transactionProcessor);
         when(transactionProcessor.validateTransaction(transaction)).thenReturn(Collections.emptyList());
@@ -50,7 +51,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction with invalid transaction")
     void processInvalidTransaction() {
-        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, 1.0, null);
+        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, new BigDecimal("1.0"), null);
         List<String> errors = List.of("Missing required field: bank", "Missing required field: accountNumber");
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.BANK_TRANSFER)).thenReturn(transactionProcessor);

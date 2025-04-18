@@ -5,6 +5,8 @@ import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.Transaction;
 import lombok.AllArgsConstructor;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,20 +31,25 @@ public abstract class TransactionProcessor {
     protected void validateRequiredFields(Map<String, String> additionalInfo, List<String> errors) {
     }
 
-    private void validatePriceModifier(double priceModifier, List<String> errors) {
+    private void validatePriceModifier(BigDecimal priceModifier, List<String> errors) {
         PriceModifierRange priceModifierRange = properties.getPriceModifierRange();
-        if (priceModifier < priceModifierRange.min() || priceModifier > priceModifierRange.max()) {
+        if (priceModifier.compareTo(priceModifierRange.min()) < 0 ||
+                priceModifier.compareTo(priceModifierRange.max()) > 0) {
             errors.add(String.format(
                     "Invalid price modifier. Expected range: %s to %s", priceModifierRange.min(), priceModifierRange.max()));
         }
     }
 
     private void applyFinalPrice(Transaction transaction) {
-        double finalPrice = transaction.getPrice() * transaction.getPriceModifier();
+        BigDecimal finalPrice = transaction.getPrice()
+                .multiply(transaction.getPriceModifier())
+                .setScale(2, RoundingMode.HALF_UP);
         transaction.setFinalPrice(finalPrice);
     }
 
-    private void applyPoints(Transaction transaction, double pointsMultiplier) {
-        transaction.setPoints((int) (transaction.getPrice() * pointsMultiplier));
+    private void applyPoints(Transaction transaction, BigDecimal pointsMultiplier) {
+        int points = transaction.getPrice().multiply(pointsMultiplier)
+                .setScale(0, RoundingMode.HALF_UP).intValue();
+        transaction.setPoints(points);
     }
 }
