@@ -1,9 +1,9 @@
 package com.genezeiniss.pos_transaction_processor.utils;
 
+import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -25,12 +25,12 @@ public class ValidatorUtils {
     private static final String MISSING_FIELD_MSG = "Missing required field: %s";
     private static final String UNSUPPORTED_COURIER_MSG = "Courier %s does not accept this payment method";
 
-    public static void validateBank(Map<String, String> additionalInfo, List<String> errors) {
-        validateField(additionalInfo, BANK, BANK_NAME_PATTERN, errors);
+    public static void validateBank(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        validateField(transactionMetadata, BANK, BANK_NAME_PATTERN, errors);
     }
 
-    public static void validateAccountNumber(Map<String, String> additionalInfo, List<String> errors) {
-        getAdditionalInfoField(additionalInfo, ACCOUNT_NUMBER)
+    public static void validateAccountNumber(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        getMetadataAttribute(transactionMetadata, ACCOUNT_NUMBER)
                 .ifPresentOrElse(
                         value -> {
                             String normalized = normalizePaymentString(value);
@@ -41,8 +41,8 @@ public class ValidatorUtils {
                         () -> errors.add(String.format(MISSING_FIELD_MSG, ACCOUNT_NUMBER)));
     }
 
-    public static void validateChequeNumber(Map<String, String> additionalInfo, List<String> errors) {
-        getAdditionalInfoField(additionalInfo, CHEQUE_NUMBER)
+    public static void validateChequeNumber(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        getMetadataAttribute(transactionMetadata, CHEQUE_NUMBER)
                 .ifPresentOrElse(
                         value -> {
                             String normalized = normalizePaymentString(value);
@@ -53,12 +53,12 @@ public class ValidatorUtils {
                         () -> errors.add(String.format(MISSING_FIELD_MSG, CHEQUE_NUMBER)));
     }
 
-    public static void validateCardLastDigits(Map<String, String> additionalInfo, List<String> errors) {
-        validateField(additionalInfo, LAST4, LAST4_PATTERN, errors);
+    public static void validateCardLastDigits(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        validateField(transactionMetadata, LAST4, LAST4_PATTERN, errors);
     }
 
-    public static void validateCourier(Map<String, String> additionalInfo, List<String> allowedCouriers, List<String> errors) {
-        getAdditionalInfoField(additionalInfo, COURIER)
+    public static void validateCourier(List<TransactionMetadata> transactionMetadata, List<String> allowedCouriers, List<String> errors) {
+        getMetadataAttribute(transactionMetadata, COURIER)
                 .ifPresentOrElse(
                         value -> {
                             if (!allowedCouriers.contains(value.toLowerCase())) {
@@ -68,8 +68,8 @@ public class ValidatorUtils {
                         () -> errors.add(String.format(MISSING_FIELD_MSG, COURIER)));
     }
 
-    private static void validateField(Map<String, String> additionalInfo, String fieldName, Pattern pattern, List<String> errors) {
-        getAdditionalInfoField(additionalInfo, fieldName)
+    private static void validateField(List<TransactionMetadata> transactionMetadata, String fieldName, Pattern pattern, List<String> errors) {
+        getMetadataAttribute(transactionMetadata, fieldName)
                 .ifPresentOrElse(
                         value -> {
                             if (!pattern.matcher(value).matches()) {
@@ -88,9 +88,11 @@ public class ValidatorUtils {
         return value.replaceAll("[\\s-]", "");
     }
 
-    private static Optional<String> getAdditionalInfoField(Map<String, String> additionalInfo, String field) {
-        return Optional.ofNullable(additionalInfo)
-                .map(info -> info.get(field))
-                .filter(Strings::isNotBlank);
+    private static Optional<String> getMetadataAttribute(List<TransactionMetadata> transactionMetadata, String field) {
+        return Optional.ofNullable(transactionMetadata)
+                .flatMap(metadataList -> metadataList.stream()
+                        .filter(metadata -> metadata.attribute().equals(field) && Strings.isNotBlank(metadata.data()))
+                        .map(TransactionMetadata::data)
+                        .findAny());
     }
 }

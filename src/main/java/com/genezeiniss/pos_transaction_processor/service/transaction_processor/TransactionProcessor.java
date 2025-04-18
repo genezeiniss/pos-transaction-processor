@@ -3,13 +3,13 @@ package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 import com.genezeiniss.pos_transaction_processor.configuration.PaymentMethodProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.Transaction;
+import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @AllArgsConstructor
 public abstract class TransactionProcessor {
@@ -18,7 +18,7 @@ public abstract class TransactionProcessor {
 
     public List<String> validateTransaction(Transaction transaction) {
         List<String> errors = new ArrayList<>();
-        validateRequiredFields(transaction.getAdditionalInformation(), errors);
+        validateRequiredFields(transaction.getMetadata(), errors);
         validatePriceModifier(transaction.getPriceModifier(), errors);
         return errors;
     }
@@ -28,7 +28,7 @@ public abstract class TransactionProcessor {
         applyPoints(transaction, this.properties.getPointsMultiplier());
     }
 
-    protected void validateRequiredFields(Map<String, String> additionalInfo, List<String> errors) {
+    protected void validateRequiredFields(List<TransactionMetadata> transactionMetadata, List<String> errors) {
     }
 
     private void validatePriceModifier(BigDecimal priceModifier, List<String> errors) {

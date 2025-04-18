@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Map;
+import java.util.List;
 
 @Data
 public class Transaction {
@@ -16,7 +16,7 @@ public class Transaction {
     protected BigDecimal priceModifier;
     protected PaymentMethod paymentMethod;
     protected Instant datetime;
-    protected Map<String, String> additionalInformation;
+    protected List<TransactionMetadata> metadata;
     private BigDecimal finalPrice;
     private int points;
 }

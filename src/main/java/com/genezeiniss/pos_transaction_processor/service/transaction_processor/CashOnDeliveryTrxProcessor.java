@@ -1,11 +1,11 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
 import com.genezeiniss.pos_transaction_processor.configuration.CashOnDeliveryProperties;
+import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.utils.ValidatorUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class CashOnDeliveryTrxProcessor extends TransactionProcessor {
@@ -15,7 +15,7 @@ public class CashOnDeliveryTrxProcessor extends TransactionProcessor {
     }
 
     @Override
-    protected void validateRequiredFields(Map<String, String> additionalInfo, List<String> errors) {
-        ValidatorUtils.validateCourier(additionalInfo, ((CashOnDeliveryProperties) properties).getAllowedCouriers(), errors);
+    protected void validateRequiredFields(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        ValidatorUtils.validateCourier(transactionMetadata, ((CashOnDeliveryProperties) properties).getAllowedCouriers(), errors);
     }
 }
