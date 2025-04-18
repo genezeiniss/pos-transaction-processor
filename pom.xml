@@ -30,7 +30,6 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- persistence -->
 		<dependency>
 			<groupId>org.liquibase</groupId>
 			<artifactId>liquibase-core</artifactId>
@@ -39,6 +38,10 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jooq</artifactId>
 		</dependency>
 
 		<!-- testing -->
@@ -70,7 +73,50 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.jooq</groupId>
+				<artifactId>jooq-codegen-maven</artifactId>
+				<executions>
+					<execution>
+						<id>generate-liquibase-xml-rootpath</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<generator>
+								<database>
+									<name>org.jooq.meta.extensions.liquibase.LiquibaseDatabase</name>
+									<properties>
+										<property>
+											<key>rootPath</key>
+											<value>${basedir}/src/main/resources</value>
+										</property>
+										<property>
+											<key>scripts</key>
+											<value>db/changelog/db.changelog-master.xml</value>
+										</property>
+									</properties>
+								</database>
+								<generate>
+									<records>true</records>
+								</generate>
+								<target>
+									<packageName>com.genezeiniss.point_of_sale.persistence.generated</packageName>
+									<directory>target/generated-sources/jooq</directory>
+								</target>
+							</generator>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.jooq</groupId>
+						<artifactId>jooq-meta-extensions-liquibase</artifactId>
+						<version>3.19.21</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>
