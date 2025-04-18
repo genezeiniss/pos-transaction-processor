@@ -1,3 +1,15 @@
+spring:
+  application:
+    name: pos-transaction-processor
+  datasource:
+    url: jdbc:postgresql://localhost:5432/point_of_sale
+    username: admin
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yml
+    enabled: true
+
 payment-method-modifiers:
   cash:
     points-multiplier: 0.05
