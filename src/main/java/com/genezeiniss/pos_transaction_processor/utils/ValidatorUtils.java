@@ -91,8 +91,8 @@ public class ValidatorUtils {
     private static Optional<String> getMetadataAttribute(List<TransactionMetadata> transactionMetadata, String field) {
         return Optional.ofNullable(transactionMetadata)
                 .flatMap(metadataList -> metadataList.stream()
-                        .filter(metadata -> metadata.attribute().equals(field) && Strings.isNotBlank(metadata.data()))
-                        .map(TransactionMetadata::data)
+                        .filter(metadata -> metadata.getAttribute().equals(field) && Strings.isNotBlank(metadata.getData()))
+                        .map(TransactionMetadata::getData)
                         .findAny());
     }
 }

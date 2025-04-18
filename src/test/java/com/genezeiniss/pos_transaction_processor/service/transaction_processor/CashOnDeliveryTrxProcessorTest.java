@@ -44,10 +44,10 @@ public class CashOnDeliveryTrxProcessorTest {
                         List.of(),
                         "Missing required field: courier"),
                 Arguments.of("courier is blank",
-                        List.of(new TransactionMetadata("courier", "")),
+                        List.of(TransactionFixture.stubTransactionMetadata("courier", "")),
                         "Missing required field: courier"),
                 Arguments.of("courier does not accept payment method",
-                        List.of(new TransactionMetadata("courier", "courier3")),
+                        List.of(TransactionFixture.stubTransactionMetadata("courier", "courier3")),
                         "Courier courier3 does not accept this payment method"));
     }
 
@@ -68,7 +68,7 @@ public class CashOnDeliveryTrxProcessorTest {
     public void validateTransaction() {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"),
-                List.of(new TransactionMetadata("courier", "courier1")));
+                List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }
@@ -78,7 +78,7 @@ public class CashOnDeliveryTrxProcessorTest {
     public void processTransaction() {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"),
-                List.of(new TransactionMetadata("courier", "courier1")));
+                List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1")));
         transactionProcessor.processTransaction(transaction);
 
         assertEquals(new BigDecimal("101.00"), transaction.getFinalPrice(), "final price");
@@ -91,7 +91,7 @@ public class CashOnDeliveryTrxProcessorTest {
     public void invalidPriceModifier(double priceModifier) {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, BigDecimal.valueOf(priceModifier),
-                List.of(new TransactionMetadata("courier", "courier1")));
+                List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(1, errors.size(), "number of errors");

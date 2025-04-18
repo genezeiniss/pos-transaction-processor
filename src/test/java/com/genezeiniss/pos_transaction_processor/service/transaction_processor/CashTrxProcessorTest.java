@@ -2,7 +2,6 @@ package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
 import com.genezeiniss.pos_transaction_processor.configuration.CashProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
-import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,7 +46,7 @@ public class CashTrxProcessorTest {
     public void invalidPriceModifier(double priceModifier) {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, BigDecimal.valueOf(priceModifier),
-                List.of(new TransactionMetadata("courier", "courier1")));
+                List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
 
         assertEquals(1, errors.size(), "number of errors");

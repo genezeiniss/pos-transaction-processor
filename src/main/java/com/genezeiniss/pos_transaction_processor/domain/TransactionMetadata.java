@@ -1,4 +1,12 @@
 package com.genezeiniss.pos_transaction_processor.domain;
 
-public record TransactionMetadata(String attribute, String data) {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class TransactionMetadata extends BaseEntity {
+
+    private String attribute;
+    private String data;
 }

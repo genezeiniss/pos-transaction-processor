@@ -39,22 +39,22 @@ public class BankTransferTrxProcessorTest {
                         null,
                         List.of("Missing required field: bank", "Missing required field: accountNumber")),
                 Arguments.of("bank is missing",
-                        List.of(new TransactionMetadata("accountNumber", "123456")),
+                        List.of(TransactionFixture.stubTransactionMetadata("accountNumber", "123456")),
                         List.of("Missing required field: bank")),
                 Arguments.of("account number is missing",
-                        List.of(new TransactionMetadata("bank", "Bank of America")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America")),
                         List.of("Missing required field: accountNumber")),
                 Arguments.of("invalid iban",
-                        List.of(new TransactionMetadata("bank", "Bank of America"),
-                                new TransactionMetadata("accountNumber", "12AB3456789012")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                                TransactionFixture.stubTransactionMetadata("accountNumber", "12AB3456789012")),
                         List.of("Invalid accountNumber value")),
                 Arguments.of("invalid bank and blank account number",
-                        List.of(new TransactionMetadata("bank", "Chase&Co"),
-                                new TransactionMetadata("accountNumber", " ")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", "Chase&Co"),
+                                TransactionFixture.stubTransactionMetadata("accountNumber", " ")),
                         List.of("Invalid bank value", "Missing required field: accountNumber")),
                 Arguments.of("empty bank and invalid account number",
-                        List.of(new TransactionMetadata("bank", ""),
-                                new TransactionMetadata("accountNumber", "ABC123456")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", ""),
+                                TransactionFixture.stubTransactionMetadata("accountNumber", "ABC123456")),
                         List.of("Missing required field: bank", "Invalid accountNumber value")));
     }
 
@@ -75,8 +75,8 @@ public class BankTransferTrxProcessorTest {
     public void validateTransaction() {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"),
-                List.of(new TransactionMetadata("bank", "Bank of America"),
-                        new TransactionMetadata("accountNumber", "GB29NWBK60161331926819")));
+                List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                        TransactionFixture.stubTransactionMetadata("accountNumber", "GB29NWBK60161331926819")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }
@@ -86,8 +86,8 @@ public class BankTransferTrxProcessorTest {
     public void processTransaction() {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"),
-                List.of(new TransactionMetadata("bank", "Bank of America"),
-                        new TransactionMetadata("accountNumber", "GB29NWBK60161331926819")));
+                List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                        TransactionFixture.stubTransactionMetadata("accountNumber", "GB29NWBK60161331926819")));
         transactionProcessor.processTransaction(transaction);
 
         assertEquals(new BigDecimal("100.00"), transaction.getFinalPrice(), "final price");

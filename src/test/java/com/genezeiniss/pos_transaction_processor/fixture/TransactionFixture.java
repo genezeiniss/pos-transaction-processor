@@ -23,4 +23,11 @@ public class TransactionFixture {
         transaction.setMetadata(transactionMetadata);
         return transaction;
     }
+
+    public static TransactionMetadata stubTransactionMetadata(String attribute, String data) {
+        TransactionMetadata transactionMetadata = new TransactionMetadata();
+        transactionMetadata.setAttribute(attribute);
+        transactionMetadata.setData(data);
+        return transactionMetadata;
+    }
 }

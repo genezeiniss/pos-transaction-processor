@@ -42,13 +42,13 @@ public class VisaTrxProcessorTest {
                         List.of(),
                         "Missing required field: last4"),
                 Arguments.of("last4 value is alphanumeric",
-                        List.of(new TransactionMetadata("last4", "ab12")),
+                        List.of(TransactionFixture.stubTransactionMetadata("last4", "ab12")),
                         "Invalid last4 value"),
                 Arguments.of("last4 value is too short",
-                        List.of(new TransactionMetadata("last4", "123")),
+                        List.of(TransactionFixture.stubTransactionMetadata("last4", "123")),
                         "Invalid last4 value"),
                 Arguments.of("last4 value is too long",
-                        List.of(new TransactionMetadata("last4", "12345")),
+                        List.of(TransactionFixture.stubTransactionMetadata("last4", "12345")),
                         "Invalid last4 value"));
     }
 
@@ -68,7 +68,7 @@ public class VisaTrxProcessorTest {
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"),
-                List.of(new TransactionMetadata("last4", "1234")));
+                List.of(TransactionFixture.stubTransactionMetadata("last4", "1234")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }

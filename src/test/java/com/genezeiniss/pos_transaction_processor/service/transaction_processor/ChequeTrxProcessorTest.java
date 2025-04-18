@@ -39,18 +39,18 @@ public class ChequeTrxProcessorTest {
                         null,
                         List.of("Missing required field: bank", "Missing required field: chequeNumber")),
                 Arguments.of("bank is missing",
-                        List.of(new TransactionMetadata("chequeNumber", "123456789012")),
+                        List.of(TransactionFixture.stubTransactionMetadata("chequeNumber", "123456789012")),
                         List.of("Missing required field: bank")),
                 Arguments.of("cheque number is missing",
-                        List.of(new TransactionMetadata("bank", "Bank of America")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America")),
                         List.of("Missing required field: chequeNumber")),
                 Arguments.of("cheque number too short",
-                        List.of(new TransactionMetadata("bank", "Bank of America"),
-                                new TransactionMetadata("chequeNumber", "12345")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                                TransactionFixture.stubTransactionMetadata("chequeNumber", "12345")),
                         List.of("Invalid chequeNumber value")),
                 Arguments.of("empty bank and cheque number contains letters",
-                        List.of(new TransactionMetadata("bank", ""),
-                                new TransactionMetadata("chequeNumber", "ABC123456")),
+                        List.of(TransactionFixture.stubTransactionMetadata("bank", ""),
+                                TransactionFixture.stubTransactionMetadata("chequeNumber", "ABC123456")),
                         List.of("Missing required field: bank", "Invalid chequeNumber value")));
     }
 
@@ -72,8 +72,8 @@ public class ChequeTrxProcessorTest {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"),
                 List.of(
-                        new TransactionMetadata("bank", "Bank of America"),
-                        new TransactionMetadata("chequeNumber", "123456789012")));
+                        TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                        TransactionFixture.stubTransactionMetadata("chequeNumber", "123456789012")));
         List<String> errors = transactionProcessor.validateTransaction(transaction);
         assertTrue(errors.isEmpty());
     }
@@ -84,8 +84,8 @@ public class ChequeTrxProcessorTest {
 
         var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.99"),
                 List.of(
-                        new TransactionMetadata("bank", "Bank of America"),
-                        new TransactionMetadata("chequeNumber", "123456789012")));
+                        TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
+                        TransactionFixture.stubTransactionMetadata("chequeNumber", "123456789012")));
         transactionProcessor.processTransaction(transaction);
 
         assertEquals(new BigDecimal("99.00"), transaction.getFinalPrice(), "final price");
