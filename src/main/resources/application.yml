@@ -4,6 +4,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/point_of_sale
     username: postgres
     password: postgres
+    hikari:
+      maximum-pool-size: 30     # todo: change based on DB max connections / expected concurrency
+      minimum-idle: 10
+      idle-timeout: 30000       # 30 seconds
+      max-lifetime: 600000      # 10 minutes
+      connection-timeout: 30000 # 30 seconds
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
 

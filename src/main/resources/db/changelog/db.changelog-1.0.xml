@@ -84,5 +84,9 @@
                 tableName="transaction_metadata"
                 columnNames="transaction_id, attribute"
                 constraintName="uk_transaction_metadata_attribute"/>
+
+        <createIndex indexName="idx_transaction_metadata_transaction_id" tableName="transaction_metadata">
+            <column name="transaction_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

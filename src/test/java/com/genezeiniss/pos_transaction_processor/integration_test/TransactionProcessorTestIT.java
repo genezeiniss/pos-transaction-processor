@@ -15,12 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
 class TransactionProcessorTestIT {
+
+    // todo: create command to run integration test on demand
 
     @Autowired
     private TransactionService transactionService;
@@ -41,20 +45,24 @@ class TransactionProcessorTestIT {
 
         transactionService.processTransaction(transaction, metadataList);
 
-        var storedTransaction = transactionRepository.findById(transaction.getId());
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            var storedTransaction = transactionRepository.findById(transaction.getId());
 
-        assertNotNull(storedTransaction);
-        assertEquals(transaction.getPaymentMethod(), storedTransaction.getPaymentMethod(), "payment method");
-        assertEquals(transaction.getPrice(), storedTransaction.getPrice(), "price");
-        assertEquals(transaction.getPriceModifier(), storedTransaction.getPriceModifier(), "price modifier");
-        assertEquals(transaction.getFinalPrice(), storedTransaction.getFinalPrice(), "final price");
-        assertEquals(transaction.getPoints(), storedTransaction.getPoints(), "points");
+            assertNotNull(storedTransaction);
+            assertEquals(transaction.getPaymentMethod(), storedTransaction.getPaymentMethod(), "payment method");
+            assertEquals(transaction.getPrice(), storedTransaction.getPrice(), "price");
+            assertEquals(transaction.getPriceModifier(), storedTransaction.getPriceModifier(), "price modifier");
+            assertEquals(transaction.getFinalPrice(), storedTransaction.getFinalPrice(), "final price");
+            assertEquals(transaction.getPoints(), storedTransaction.getPoints(), "points");
+        });
 
-        var storedMetadata = transactionMetadataRepository.findByTransactionId(transaction.getId());
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            var storedMetadata = transactionMetadataRepository.findByTransactionId(transaction.getId());
 
-        assertEquals(1, storedMetadata.size(), "transaction metadata size");
-        assertEquals(metadata.getAttribute(), storedMetadata.get(0).getAttribute(), "transaction metadata attribute");
-        assertEquals(metadata.getData(), storedMetadata.get(0).getData(), "transaction metadata data");
+            assertEquals(1, storedMetadata.size(), "transaction metadata size");
+            assertEquals(metadata.getAttribute(), storedMetadata.get(0).getAttribute(), "transaction metadata attribute");
+            assertEquals(metadata.getData(), storedMetadata.get(0).getData(), "transaction metadata data");
+        });
     }
 
     @Test
@@ -63,7 +71,10 @@ class TransactionProcessorTestIT {
         var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0);
         transactionService.processTransaction(transaction, List.of());
 
-        assertNotNull(transactionRepository.findById(transaction.getId()), "transaction should be persisted");
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            assertNotNull(transactionRepository.findById(transaction.getId()), "transaction should be persisted");
+        });
+
         assertTrue(transactionMetadataRepository.findByTransactionId(transaction.getId()).isEmpty(), "transaction metadata should not be persisted");
     }
 
@@ -77,13 +88,16 @@ class TransactionProcessorTestIT {
 
         transactionService.processTransaction(transaction, metadataList);
 
-        assertNotNull(transactionRepository.findById(transaction.getId()));
-        var storedMetadata = transactionMetadataRepository.findByTransactionId(transaction.getId());
-
-        assertEquals(2, storedMetadata.size(), "metadata entries size should be 2");
-        assertTrue(storedMetadata.stream()
-                .map(TransactionMetadata::getAttribute)
-                .toList()
-                .containsAll(List.of("bank", "accountNumber")), "metadata attributes");
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            assertNotNull(transactionRepository.findById(transaction.getId()));
+        });
+        await().atMost(5, SECONDS).untilAsserted(() -> {
+            var storedMetadata = transactionMetadataRepository.findByTransactionId(transaction.getId());
+            assertEquals(2, storedMetadata.size(), "metadata entries size should be 2");
+            assertTrue(storedMetadata.stream()
+                    .map(TransactionMetadata::getAttribute)
+                    .toList()
+                    .containsAll(List.of("bank", "accountNumber")), "metadata attributes");
+        });
     }
 }
