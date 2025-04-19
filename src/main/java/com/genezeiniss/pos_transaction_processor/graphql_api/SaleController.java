@@ -21,13 +21,12 @@ public class SaleController {
     @MutationMapping
     public SaleResponse processSale(@Argument SaleRequest request) {
 
-        var transaction = transactionModelMapper.mapTransactionRequestToTransaction(request);
+        var transaction = transactionModelMapper.mapSaleRequestToTransaction(request);
         var transactionMetadata = transactionModelMapper.mapToTransactionMetadata(request.getAdditionalItem());
         transactionService.processTransaction(transaction, transactionMetadata);
-        return transactionModelMapper.mapTransactionToTransactionResponse(transaction);
+        return transactionModelMapper.mapTransactionToSaleResponse(transaction);
     }
 
-    // todo: can I just return List?
     @QueryMapping
     public SalesReportResponse getSalesReport(@Argument String startDateTime, @Argument String endDateTime) {
 

@@ -10,8 +10,7 @@ import java.time.OffsetDateTime;
 public class TransactionFixture {
 
     public static Transaction stubTransaction(PaymentMethod paymentMethod, double priceModifier) {
-        Transaction transaction = new Transaction();
-        transaction.setUserId("userId");
+        var transaction = new Transaction();
         transaction.setCustomerId("customerId");
         transaction.setOriginalPrice(new BigDecimal("100.00"));
         transaction.setPriceModifier(priceModifier);
@@ -21,7 +20,7 @@ public class TransactionFixture {
     }
 
     public static TransactionMetadata stubTransactionMetadata(String attribute, String data) {
-        TransactionMetadata transactionMetadata = new TransactionMetadata();
+        var transactionMetadata = new TransactionMetadata();
         transactionMetadata.setAttribute(attribute);
         transactionMetadata.setData(data);
         return transactionMetadata;

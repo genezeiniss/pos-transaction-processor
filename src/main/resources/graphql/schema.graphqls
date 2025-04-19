@@ -37,7 +37,3 @@ type Mutation {
 type Query {
     getSalesReport(startDateTime: DateTime!, endDateTime: DateTime!): [SalesReportResponse]!
 }
-
-type Error {
-    error: String!
-}

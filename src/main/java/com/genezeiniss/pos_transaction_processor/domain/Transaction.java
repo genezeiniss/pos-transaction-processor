@@ -11,7 +11,6 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class Transaction extends BaseEntity {
 
-    protected String userId;
     protected String customerId;
     protected PaymentMethod paymentMethod;
     protected BigDecimal originalPrice;
