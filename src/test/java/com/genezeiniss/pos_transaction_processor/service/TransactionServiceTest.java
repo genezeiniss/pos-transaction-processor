@@ -1,6 +1,6 @@
 package com.genezeiniss.pos_transaction_processor.service;
 
-import com.genezeiniss.pos_transaction_processor.domain.Transaction;
+import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
 import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -29,37 +28,44 @@ public class TransactionServiceTest {
     @Mock
     private TransactionProcessor transactionProcessor;
 
+    @Mock
+    private PersistenceService persistenceService;
+
     @InjectMocks
     private TransactionService transactionService;
 
     @Test
-    @DisplayName("process transaction with valid transaction")
+    @DisplayName("process transaction with valid transaction and metadata")
     void processTransaction() {
-        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0, null);
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0);
+        List<TransactionMetadata> metadata = List.of();
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.CASH)).thenReturn(transactionProcessor);
-        when(transactionProcessor.validateTransaction(transaction)).thenReturn(Collections.emptyList());
+        doNothing().when(transactionProcessor).validateTransactionOrException(transaction, metadata);
+        doNothing().when(transactionProcessor).processTransaction(transaction);
 
-        transactionService.processTransaction(transaction);
+        transactionService.processTransaction(transaction, metadata);
 
         verify(processorFactory).getTransactionProcessor(PaymentMethod.CASH);
-        verify(transactionProcessor).validateTransaction(transaction);
+        verify(transactionProcessor).validateTransactionOrException(transaction, metadata);
         verify(transactionProcessor).processTransaction(transaction);
+        verify(persistenceService).persistTransaction(transaction, metadata);
     }
 
     @Test
-    @DisplayName("process transaction with invalid transaction")
-    void processInvalidTransaction() {
-        Transaction transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, 1.0, null);
-        List<String> errors = List.of("Missing required field: bank", "Missing required field: accountNumber");
+    @DisplayName("process transaction: validation failure")
+    void validationFailure() {
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, 1.0);
+        List<TransactionMetadata> metadata = Collections.emptyList();
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.BANK_TRANSFER)).thenReturn(transactionProcessor);
-        when(transactionProcessor.validateTransaction(transaction)).thenReturn(errors);
+        doThrow(ValidationException.class)
+                .when(transactionProcessor).validateTransactionOrException(transaction, metadata);
 
-        ValidationException exception = assertThrows(ValidationException.class,
-                () -> transactionService.processTransaction(transaction));
+        assertThrows(ValidationException.class,
+                () -> transactionService.processTransaction(transaction, metadata));
 
-        assertEquals(String.format("%s; %s", errors.get(0), errors.get(1)), exception.getMessage());
         verify(transactionProcessor, never()).processTransaction(transaction);
+        verifyNoInteractions(persistenceService);
     }
 }

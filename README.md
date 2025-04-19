@@ -88,3 +88,48 @@ Designed for use across shops and online stores, which will integrate with the s
 
 **Output**:
 - Hourly breakdown of sales and points for specific user.
+
+## How to run application locally
+
+I. Run Postgres locally with Podman as Docker Container
+
+1. Install Podman:
+
+```bash 
+   brew install podman
+```
+
+2. Init podman machine:
+
+```bash 
+   podman machine init
+```
+
+3. Start podman machine:
+
+```bash 
+  podman machine start
+```
+
+4. Install PostgreSQL:
+
+```bash 
+  podman pull postgres
+```
+
+5. Run PostgreSQL container:
+
+```bash
+   podman run --name postgres \
+   -e POSTGRES_USER=postgres \
+   -e POSTGRES_PASSWORD=postgres \
+   -e POSTGRES_DB=point_of_sale \
+   -p 5432:5432 \
+   -d postgres:latest
+```
+
+6. Connect to PostgreSQL:
+
+```bash
+   podman exec -it postgres psql -U postgres -d point_of_sale
+```

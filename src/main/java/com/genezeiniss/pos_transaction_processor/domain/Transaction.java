@@ -2,22 +2,21 @@ package com.genezeiniss.pos_transaction_processor.domain;
 
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.time.Instant;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
-public class Transaction {
+@EqualsAndHashCode(callSuper = true)
+public class Transaction extends BaseEntity {
 
     protected String userId;
     protected String customerId;
-    protected double price;
+    protected BigDecimal price;
     protected double priceModifier;
     protected PaymentMethod paymentMethod;
-    protected Instant datetime;
-    protected Map<String, String> additionalInformation;
-    //todo: make sure that Graphql return values with two decimals
-    private double finalPrice;
+    protected LocalDateTime createdAt;
+    private BigDecimal finalPrice;
     private int points;
-
 }

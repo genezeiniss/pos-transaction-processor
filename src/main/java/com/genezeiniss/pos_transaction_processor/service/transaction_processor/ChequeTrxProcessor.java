@@ -1,22 +1,22 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.ChequeProperties;
+import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.ChequeModifier;
 import com.genezeiniss.pos_transaction_processor.utils.ValidatorUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 public class ChequeTrxProcessor extends TransactionProcessor {
 
-    public ChequeTrxProcessor(ChequeProperties properties) {
+    public ChequeTrxProcessor(ChequeModifier properties) {
         super(properties);
     }
 
     @Override
-    protected void validateRequiredFields(Map<String, String> additionalInfo, List<String> errors) {
-        ValidatorUtils.validateBank(additionalInfo, errors);
-        ValidatorUtils.validateChequeNumber(additionalInfo, errors);
+    protected void validateRequiredFields(List<TransactionMetadata> transactionMetadata, List<String> errors) {
+        ValidatorUtils.validateBank(transactionMetadata, errors);
+        ValidatorUtils.validateChequeNumber(transactionMetadata, errors);
     }
 }

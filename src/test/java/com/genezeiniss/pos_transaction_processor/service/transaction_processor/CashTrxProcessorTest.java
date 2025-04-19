@@ -1,8 +1,9 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.CashProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.CashModifier;
+import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -10,10 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CashTrxProcessorTest {
 
@@ -22,7 +24,7 @@ public class CashTrxProcessorTest {
 
     @BeforeAll
     static void setup() {
-        CashProperties properties = new CashProperties();
+        CashModifier properties = new CashModifier();
         properties.setPointsMultiplier(0.05);
         properties.setPriceModifierRange(new PriceModifierRange(0.9, 1.0));
 
@@ -32,23 +34,22 @@ public class CashTrxProcessorTest {
     @Test
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, 0.95, null);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 0.95);
         transactionProcessor.processTransaction(transaction);
 
-        assertEquals(95, transaction.getFinalPrice(), "final price");
+        assertEquals(new BigDecimal("95.00"), transaction.getFinalPrice(), "final price");
         assertEquals(5, transaction.getPoints(), "points");
     }
-
 
     @ParameterizedTest
     @ValueSource(doubles = {0.89, 1.01, 0})
     @DisplayName("validate transaction: invalid price modifier")
     public void invalidPriceModifier(double priceModifier) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, priceModifier, Map.of("courier", "courier1"));
-        List<String> errors = transactionProcessor.validateTransaction(transaction);
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, priceModifier);
+        ValidationException exception = assertThrows(ValidationException.class,
+                () -> transactionProcessor.validateTransactionOrException(transaction, List.of()));
 
-        assertEquals(1, errors.size(), "number of errors");
-        assertEquals("Invalid price modifier. Expected range: 0.9 to 1.0", errors.getFirst(), "error message");
+        assertEquals("Invalid price modifier. Expected range: 0.9 to 1.0", exception.getMessage());
     }
 }
