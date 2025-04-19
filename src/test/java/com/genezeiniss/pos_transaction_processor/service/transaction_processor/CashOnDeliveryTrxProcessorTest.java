@@ -1,9 +1,9 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.CashOnDeliveryProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.CashOnDeliveryModifier;
 import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,9 +27,9 @@ public class CashOnDeliveryTrxProcessorTest {
 
     @BeforeAll
     static void setup() {
-        CashOnDeliveryProperties properties = new CashOnDeliveryProperties();
-        properties.setPointsMultiplier(new BigDecimal("0.05"));
-        properties.setPriceModifierRange(new PriceModifierRange(new BigDecimal("1.0"), new BigDecimal("1.02")));
+        CashOnDeliveryModifier properties = new CashOnDeliveryModifier();
+        properties.setPointsMultiplier(0.05);
+        properties.setPriceModifierRange(new PriceModifierRange(1.0, 1.02));
         properties.setAllowedCouriers(List.of("courier1", "courier2"));
 
         transactionProcessor = new CashOnDeliveryTrxProcessor(properties);
@@ -56,7 +56,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction with invalid required fields")
     public void validationFailure(String scenario, List<TransactionMetadata> metadata, String expectedError) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0);
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> transactionProcessor.validateTransactionOrException(transaction, metadata));
 
@@ -67,7 +67,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.01);
         var metadata = List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1"));
         assertDoesNotThrow(() -> transactionProcessor.validateTransactionOrException(transaction, metadata));
     }
@@ -76,7 +76,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("process transaction: happy flow")
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.01"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.01);
         transactionProcessor.processTransaction(transaction);
 
         assertEquals(new BigDecimal("101.00"), transaction.getFinalPrice(), "final price");
@@ -88,7 +88,7 @@ public class CashOnDeliveryTrxProcessorTest {
     @DisplayName("validate transaction: invalid price modifier")
     public void invalidPriceModifier(double priceModifier) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, BigDecimal.valueOf(priceModifier));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, priceModifier);
         var metadata = List.of(TransactionFixture.stubTransactionMetadata("courier", "courier1"));
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> transactionProcessor.validateTransactionOrException(transaction, metadata));

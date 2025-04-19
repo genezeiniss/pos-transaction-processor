@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -14,9 +14,9 @@ public class Transaction extends BaseEntity {
     protected String userId;
     protected String customerId;
     protected BigDecimal price;
-    protected BigDecimal priceModifier;
+    protected double priceModifier;
     protected PaymentMethod paymentMethod;
-    protected Instant datetime;
+    protected LocalDateTime createdAt;
     private BigDecimal finalPrice;
     private int points;
 }

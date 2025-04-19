@@ -15,7 +15,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction with valid transaction and metadata")
     void processTransaction() {
-        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0);
         List<TransactionMetadata> metadata = List.of();
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.CASH)).thenReturn(transactionProcessor);
@@ -60,7 +59,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction: validation failure")
     void validationFailure() {
-        var transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.BANK_TRANSFER, 1.0);
         List<TransactionMetadata> metadata = Collections.emptyList();
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.BANK_TRANSFER)).thenReturn(transactionProcessor);
@@ -77,7 +76,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction should persist transaction and metadata successfully")
     void persistTransactionAndMetadata() {
-        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH_ON_DELIVERY, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH_ON_DELIVERY, 1.0);
         var metadata = TransactionFixture.stubTransactionMetadata("courier", "yamato");
         var metadataList = List.of(metadata);
 
@@ -97,7 +96,7 @@ public class TransactionServiceTest {
     @Test
     @DisplayName("process transaction with empty metadata")
     void persistTransactionOnly() {
-        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(PaymentMethod.CASH, 1.0);
         List<TransactionMetadata> metadata = Collections.emptyList();
 
         when(processorFactory.getTransactionProcessor(PaymentMethod.CASH)).thenReturn(transactionProcessor);

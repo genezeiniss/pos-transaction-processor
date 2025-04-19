@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,15 +21,15 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final TransactionMetadataRepository transactionMetadataRepository;
 
+    // todo: add logs
     public void processTransaction(Transaction transaction, List<TransactionMetadata> metadata) {
 
         var transactionProcessor = transactionProcessorFactory.getTransactionProcessor(transaction.getPaymentMethod());
 
-        transactionProcessor.validateTransactionOrException(transaction, metadata);
+        transactionProcessor.validateTransactionOrException(transaction, Optional.ofNullable(metadata).orElse(Collections.emptyList()));
         transactionProcessor.processTransaction(transaction);
 
         persistTransaction(transaction, metadata);
-
     }
 
     @Transactional

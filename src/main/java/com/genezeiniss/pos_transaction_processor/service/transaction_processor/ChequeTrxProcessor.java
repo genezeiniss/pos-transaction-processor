@@ -1,7 +1,7 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.ChequeProperties;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.ChequeModifier;
 import com.genezeiniss.pos_transaction_processor.utils.ValidatorUtils;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.util.List;
 @Component
 public class ChequeTrxProcessor extends TransactionProcessor {
 
-    public ChequeTrxProcessor(ChequeProperties properties) {
+    public ChequeTrxProcessor(ChequeModifier properties) {
         super(properties);
     }
 

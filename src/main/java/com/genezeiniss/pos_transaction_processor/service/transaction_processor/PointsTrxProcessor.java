@@ -1,12 +1,12 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.PointsProperties;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.PointsModifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PointsTrxProcessor extends TransactionProcessor {
 
-    public PointsTrxProcessor(PointsProperties properties) {
+    public PointsTrxProcessor(PointsModifier properties) {
         super(properties);
     }
 }

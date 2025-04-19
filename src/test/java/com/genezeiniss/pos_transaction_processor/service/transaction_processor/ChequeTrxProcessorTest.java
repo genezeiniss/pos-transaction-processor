@@ -1,9 +1,9 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.ChequeProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.ChequeModifier;
 import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import com.genezeiniss.pos_transaction_processor.fixture.TransactionFixture;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,9 +26,9 @@ public class ChequeTrxProcessorTest {
 
     @BeforeAll
     static void setup() {
-        ChequeProperties properties = new ChequeProperties();
-        properties.setPointsMultiplier(new BigDecimal("0"));
-        properties.setPriceModifierRange(new PriceModifierRange(new BigDecimal("0.9"), new BigDecimal("1.0")));
+        ChequeModifier properties = new ChequeModifier();
+        properties.setPointsMultiplier(0);
+        properties.setPriceModifierRange(new PriceModifierRange(0.9, 1.0));
 
         transactionProcessor = new ChequeTrxProcessor(properties);
     }
@@ -59,7 +59,7 @@ public class ChequeTrxProcessorTest {
     @DisplayName("validate transaction with invalid required fields")
     public void validationFailure(String scenario, List<TransactionMetadata> metadata, List<String> expectedErrors) {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0);
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> transactionProcessor.validateTransactionOrException(transaction, metadata));
 
@@ -70,7 +70,7 @@ public class ChequeTrxProcessorTest {
     @DisplayName("validate transaction: happy flow")
     public void validateTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("1.0"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 1.0);
         var metadata = List.of(
                         TransactionFixture.stubTransactionMetadata("bank", "Bank of America"),
                 TransactionFixture.stubTransactionMetadata("chequeNumber", "123456789012"));
@@ -81,7 +81,7 @@ public class ChequeTrxProcessorTest {
     @DisplayName("process transaction: happy flow")
     public void processTransaction() {
 
-        var transaction = TransactionFixture.stubTransaction(paymentMethod, new BigDecimal("0.99"));
+        var transaction = TransactionFixture.stubTransaction(paymentMethod, 0.99);
         transactionProcessor.processTransaction(transaction);
 
         assertEquals(new BigDecimal("99.00"), transaction.getFinalPrice(), "final price");

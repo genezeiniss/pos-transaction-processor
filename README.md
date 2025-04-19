@@ -121,7 +121,7 @@ I. Run Postgres locally with Podman as Docker Container
 
 ```bash
    podman run --name postgres \
-   -e POSTGRES_USER=podtgres \
+   -e POSTGRES_USER=postgres \
    -e POSTGRES_PASSWORD=postgres \
    -e POSTGRES_DB=point_of_sale \
    -p 5432:5432 \
@@ -131,5 +131,5 @@ I. Run Postgres locally with Podman as Docker Container
 6. Connect to PostgreSQL:
 
 ```bash
-   podman exec -it postgres psql -U admin -d point_of_sale
+   podman exec -it postgres psql -U postgres -d point_of_sale
 ```

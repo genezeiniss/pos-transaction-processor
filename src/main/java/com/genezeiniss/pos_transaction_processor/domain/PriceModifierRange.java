@@ -1,6 +1,13 @@
 package com.genezeiniss.pos_transaction_processor.domain;
 
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-public record PriceModifierRange(BigDecimal min, BigDecimal max) {
+@Getter
+@Setter
+@AllArgsConstructor
+public class PriceModifierRange {
+    private double min;
+    private double max;
 }

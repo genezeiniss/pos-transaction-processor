@@ -1,9 +1,0 @@
-package com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-@ConfigurationProperties(prefix = "payment-method-modifiers.paypay")
-public class PaypayProperties extends PaymentMethodProperties {
-}

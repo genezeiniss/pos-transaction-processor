@@ -1,6 +1,7 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.PaymentMethodModifiers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TransactionProcessorFactoryTest {
 
-    private final TransactionProcessorFactory factory = new TransactionProcessorFactory();
+    private final TransactionProcessorFactory factory = new TransactionProcessorFactory(new PaymentMethodModifiers());
 
     @ParameterizedTest
     @EnumSource(PaymentMethod.class)

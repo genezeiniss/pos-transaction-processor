@@ -1,9 +1,9 @@
 package com.genezeiniss.pos_transaction_processor.service.transaction_processor;
 
-import com.genezeiniss.pos_transaction_processor.configuration.payment_method_properties.PaymentMethodProperties;
 import com.genezeiniss.pos_transaction_processor.domain.PriceModifierRange;
 import com.genezeiniss.pos_transaction_processor.domain.Transaction;
 import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
+import com.genezeiniss.pos_transaction_processor.domain.payment_method_modifiers.PaymentMethodModifier;
 import com.genezeiniss.pos_transaction_processor.exception.ValidationException;
 import lombok.AllArgsConstructor;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public abstract class TransactionProcessor {
 
-    protected final PaymentMethodProperties properties;
+    protected final PaymentMethodModifier properties;
 
     public void validateTransactionOrException(Transaction transaction,
                                                List<TransactionMetadata> transactionMetadata) {
@@ -36,25 +36,29 @@ public abstract class TransactionProcessor {
     protected void validateRequiredFields(List<TransactionMetadata> transactionMetadata, List<String> errors) {
     }
 
-    private void validatePriceModifier(BigDecimal priceModifier, List<String> errors) {
+    private void validatePriceModifier(double priceModifier, List<String> errors) {
+
         PriceModifierRange priceModifierRange = properties.getPriceModifierRange();
-        if (priceModifier.compareTo(priceModifierRange.min()) < 0 ||
-                priceModifier.compareTo(priceModifierRange.max()) > 0) {
-            errors.add(String.format(
-                    "Invalid price modifier. Expected range: %s to %s", priceModifierRange.min(), priceModifierRange.max()));
+        double min = priceModifierRange.getMin();
+        double max = priceModifierRange.getMax();
+
+        if (priceModifier < min || priceModifier > max) {
+            errors.add(String.format("Invalid price modifier. Expected range: %s to %s", min, max));
         }
     }
 
     private void applyFinalPrice(Transaction transaction) {
         BigDecimal finalPrice = transaction.getPrice()
-                .multiply(transaction.getPriceModifier())
+                .multiply(BigDecimal.valueOf(transaction.getPriceModifier()))
                 .setScale(2, RoundingMode.HALF_UP);
         transaction.setFinalPrice(finalPrice);
     }
 
-    private void applyPoints(Transaction transaction, BigDecimal pointsMultiplier) {
-        int points = transaction.getPrice().multiply(pointsMultiplier)
-                .setScale(0, RoundingMode.HALF_UP).intValue();
+    private void applyPoints(Transaction transaction, double pointsMultiplier) {
+        int points = transaction.getPrice()
+                .multiply(BigDecimal.valueOf(pointsMultiplier))
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
         transaction.setPoints(points);
     }
 }
