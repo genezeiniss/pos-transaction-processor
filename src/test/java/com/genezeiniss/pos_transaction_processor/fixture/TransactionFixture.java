@@ -5,7 +5,7 @@ import com.genezeiniss.pos_transaction_processor.domain.TransactionMetadata;
 import com.genezeiniss.pos_transaction_processor.domain.enums.PaymentMethod;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class TransactionFixture {
 
@@ -13,10 +13,10 @@ public class TransactionFixture {
         Transaction transaction = new Transaction();
         transaction.setUserId("userId");
         transaction.setCustomerId("customerId");
-        transaction.setPrice(new BigDecimal("100.00"));
+        transaction.setOriginalPrice(new BigDecimal("100.00"));
         transaction.setPriceModifier(priceModifier);
         transaction.setPaymentMethod(paymentMethod);
-        transaction.setCreatedAt(LocalDateTime.now());
+        transaction.setCreatedAt(OffsetDateTime.now());
         return transaction;
     }
 

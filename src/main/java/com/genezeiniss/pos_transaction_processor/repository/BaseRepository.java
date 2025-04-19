@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class BaseRepository<E extends BaseEntity, R extends TableRecord<?>> {
@@ -35,7 +34,7 @@ public abstract class BaseRepository<E extends BaseEntity, R extends TableRecord
     }
 
     protected Optional<E> findOne(ResultQuery<? extends Record> query) {
-        List<E> convertedResults = find(query).collect(Collectors.toList());
+        List<E> convertedResults = find(query).toList();
         if (convertedResults.size() > 1) {
             throw new NonUniqueResultException(query);
         }

@@ -12,6 +12,11 @@ spring:
       connection-timeout: 30000 # 30 seconds
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
+    path: /graphql
 
 payment-method-modifiers:
   cash:

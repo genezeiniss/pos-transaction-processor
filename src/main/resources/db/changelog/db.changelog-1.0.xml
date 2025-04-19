@@ -23,7 +23,7 @@
             <column name="payment_method" type="VARCHAR(32)">
                 <constraints nullable="false"/>
             </column>
-            <column name="price" type="NUMERIC(10,2)">
+            <column name="original_price" type="NUMERIC(10,2)">
                 <constraints nullable="false"/>
             </column>
             <column name="price_modifier" type="NUMERIC(10,2)">
