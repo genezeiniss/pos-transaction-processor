@@ -50,7 +50,7 @@ class TransactionProcessorTestIT {
 
             assertNotNull(storedTransaction);
             assertEquals(transaction.getPaymentMethod(), storedTransaction.getPaymentMethod(), "payment method");
-            assertEquals(transaction.getPrice(), storedTransaction.getPrice(), "price");
+            assertEquals(transaction.getOriginalPrice(), storedTransaction.getOriginalPrice(), "price");
             assertEquals(transaction.getPriceModifier(), storedTransaction.getPriceModifier(), "price modifier");
             assertEquals(transaction.getFinalPrice(), storedTransaction.getFinalPrice(), "final price");
             assertEquals(transaction.getPoints(), storedTransaction.getPoints(), "points");

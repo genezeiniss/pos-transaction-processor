@@ -1,0 +1,39 @@
+scalar JSON
+scalar DateTime
+
+input SaleRequest {
+    customerId: String!
+    price: String!
+    priceModifier: Float!
+    paymentMethod: String!
+    datetime: DateTime!
+    additionalItem: JSON
+}
+
+input SalesReportRequest {
+    startDateTime: DateTime!
+    endDateTime: DateTime!
+}
+
+type SaleResponse {
+    finalPrice: String!
+    points: Int!
+}
+
+type SalesReportResponse {
+    sales: [SalesReport]!
+}
+
+type SalesReport {
+    datetime: DateTime!
+    sales: Float!
+    points: Int!
+}
+
+type Mutation {
+    processSale(request: SaleRequest!): SaleResponse!
+}
+
+type Query {
+    getSalesReport(startDateTime: DateTime!, endDateTime: DateTime!): [SalesReportResponse]!
+}

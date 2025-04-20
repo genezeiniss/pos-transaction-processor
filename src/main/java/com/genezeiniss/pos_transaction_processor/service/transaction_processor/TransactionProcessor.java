@@ -48,14 +48,14 @@ public abstract class TransactionProcessor {
     }
 
     private void applyFinalPrice(Transaction transaction) {
-        BigDecimal finalPrice = transaction.getPrice()
+        BigDecimal finalPrice = transaction.getOriginalPrice()
                 .multiply(BigDecimal.valueOf(transaction.getPriceModifier()))
                 .setScale(2, RoundingMode.HALF_UP);
         transaction.setFinalPrice(finalPrice);
     }
 
     private void applyPoints(Transaction transaction, double pointsMultiplier) {
-        int points = transaction.getPrice()
+        int points = transaction.getOriginalPrice()
                 .multiply(BigDecimal.valueOf(pointsMultiplier))
                 .setScale(0, RoundingMode.HALF_UP)
                 .intValue();
