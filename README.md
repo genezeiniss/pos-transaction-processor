@@ -89,47 +89,45 @@ Designed for use across shops and online stores, which will integrate with the s
 **Output**:
 - Hourly breakdown of sales and points for specific user.
 
-## How to run application locally
+## Application Setup Guide (Development)
 
-I. Run Postgres locally with Podman as Docker Container
+### Prerequisites
 
-1. Install Podman:
+* Podman (or Docker) installed
+* Java 21 JDK
+* Maven
 
-```bash 
-   brew install podman
-```
+### Quick Start
 
-2. Init podman machine:
-
-```bash 
-   podman machine init
-```
-
-3. Start podman machine:
-
-```bash 
-  podman machine start
-```
-
-4. Install PostgreSQL:
-
-```bash 
-  podman pull postgres
-```
-
-5. Run PostgreSQL container:
+1. Clone the repository
 
 ```bash
-   podman run --name postgres \
-   -e POSTGRES_USER=postgres \
-   -e POSTGRES_PASSWORD=postgres \
-   -e POSTGRES_DB=point_of_sale \
-   -p 5432:5432 \
-   -d postgres:latest
+   git clone https://github.com/genezeiniss/pos-transaction-processor.git
 ```
 
-6. Connect to PostgreSQL:
+```bash
+   cd {project directory}
+```
+
+2. Make the script executable
 
 ```bash
-   podman exec -it postgres psql -U postgres -d point_of_sale
+   chmod +x start-dev.sh
+```
+
+3. Run the development environment
+```bash
+   ./start-dev.sh
+```
+
+This will automatically:
+
+* Start a PostgreSQL container
+* Run database migrations (Liquibase)
+* Generate jOOQ classes
+* Launch the Spring Boot application
+
+### Graphql Playground:
+```
+  http://localhost:8080/graphiql?path=/graphql
 ```
