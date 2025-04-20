@@ -18,6 +18,8 @@ public class SaleController {
     private final TransactionProcessorModelMapper transactionModelMapper;
     private final TransactionService transactionService;
 
+    // todo: implement input validation at the API layer
+    //  Add rate limiting for transaction processing
     @MutationMapping
     public SaleResponse processSale(@Argument SaleRequest request) {
 
