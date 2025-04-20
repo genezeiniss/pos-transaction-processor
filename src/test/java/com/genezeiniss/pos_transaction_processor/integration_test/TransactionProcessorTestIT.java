@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 class TransactionProcessorTestIT {
 
-    // todo: create command to run integration test on demand
-
     @Autowired
     private TransactionService transactionService;
 
