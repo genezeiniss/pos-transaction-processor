@@ -1,33 +1,50 @@
 # POS Transaction Processor
 
-A Point of Sale (POS) integrated e-commerce platform that calculates the final price and reward points based on payment method modifiers. Since some payment providers charge commission fees, the system must limit discounts when such payment methods are used to maintain profitability.
+A Point of Sale (POS) integrated e-commerce platform that calculates final prices and reward points based on payment
+method modifiers. Since some payment providers charge commission fees, the system limits discounts for these methods to
+maintain profitability.
 
-Designed for use across shops and online stores, which will integrate with the system for seamless transactions.
+Designed for integration across physical stores and online platforms for seamless transactions.
 
+---
+
+## Table of Contents
+
+- [Goals and Objectives](#-goals-and-objectives)
+- [Tech Stack](#-tech-stack)
+- [Project Scope](#-project-scope)
+- [Core Feature: Transaction Modifier Engine](#-core-feature-transaction-modifier-engine)
+- [Application Setup Guide](#-application-setup-guide)
+- [Next Steps](#-next-steps)
+
+---
 ## Goals and Objectives
-1. Compute the final price and reward points per transaction based on payment method modifiers.
+
+1. Compute final price and reward points based on payment method modifiers.
 2. Validate payment method-specific metadata.
-3. Generate timezone-aware hourly sales reports.
+3. Generate timezone-aware hourly sales reports (TBD).
 4. Support easy extension and high concurrency.
 
+---
+
 ## Tech Stack
+
 - **Language**: Java
 - **API Type**: GraphQL
 - **Framework**: Spring Boot
 - **Database**: PostgreSQL
 - **Persistence**: Liquibase and JOOQ
 - **Build Tool**: Maven
-- **Containerization**: Docker
 - **Testing**: JUnit5
-- **Version Control**: Git (GitHub)
+- **Version Control**: GitHub
 
+---
 ## Project Scope
+
 ### ✅ Included
 
 - Reward points and final price calculation based on payment metadata.
 - Input validation for different payment types.
-- Secure and encrypted storage of sensitive metadata.
-- Hourly reporting based on sales and points awarded.
 
 ### ❌ Excluded
 
@@ -35,14 +52,15 @@ Designed for use across shops and online stores, which will integrate with the s
 - Integration with external payment gateways.
 - User authentication (unless specified in the future).
 
+---
 
-## Core Features
+## Core Feature: Transaction Modifier Engine
 
-### Transaction Modifier Engine
-**Input Fields**:
-- `customerId`, `price`, `priceModifier`, `paymentMethod`, `datetime`, `additionalItem`
+### Input Fields
 
-**Validation Rules**:
+`customerId`, `price`, `priceModifier`, `paymentMethod`, `datetime`, `additionalItem`
+
+### Validation Rules
 
 | Payment Method       | Required Fields               | Valid Modifier Range       |
 |----------------------|-------------------------------|----------------------------|
@@ -59,7 +77,8 @@ Designed for use across shops and online stores, which will integrate with the s
 | BANK_TRANSFER        | `bank`, `accountNumber`       | Must be exactly 1.0        |
 | CHEQUE               | `bank`, `chequeNumber`        | 0.9 ≤ x ≤ 1.0              |
 
-**Business Logic**:
+### Business Logic
+
 - `finalPrice = price × priceModifier`
 - `points = price × method-specific multiplier`
 
@@ -78,27 +97,22 @@ Designed for use across shops and online stores, which will integrate with the s
 | BANK_TRANSFER        | 0                 |
 | CHEQUE               | 0                 |
 
-**Storage**:
-- Transactions are saved with all details (including requester / user_id).
-- Sensitive fields (e.g., `bank_account_number`, `cheque_number`) are encrypted.
+### Storage
 
-### Sales Report
-**Input**:
-- `startDateTime`, `endDateTime`
+- Transactions are saved with all details.
+- Sensitive fields such as `bankAccountNumber` and `chequeNumber` are **encrypted** (TBD).
 
-**Output**:
-- Hourly breakdown of sales and points for specific user.
+---
 
-## Application Setup Guide (Development)
+## Application Setup Guide
 
 ### Prerequisites
 
-* Podman (or Docker) installed
-* Java 21 JDK
-* Maven
+- [Java 21 JDK](https://adoptium.net/en-GB/temurin/releases/)
+- [Maven](https://maven.apache.org/download.cgi)
+- [Podman](https://podman.io/) or [Docker](https://www.docker.com/)
 
 ### Quick Start
-
 1. Clone the repository
 
 ```bash
@@ -127,7 +141,19 @@ This will automatically:
 * Generate jOOQ classes
 * Launch the Spring Boot application
 
-### Graphql Playground:
-```
-  http://localhost:8080/graphiql?path=/graphql
-```
+4. Open [GraphQL playground](http://localhost:8080/graphiql?path=/graphql)
+
+---
+
+## 🛠️ Next Steps
+
+1. [ ] Enhance `AdditionalItem` to securely handle fields like `bankAccountNumber` and `chequeNumber` by implementing
+   field-level encryption.
+2. [ ] Add robust input validation mechanisms at the API layer to guard against malformed or malicious inputs.
+3. [ ] Implement rate limiting to control transaction throughput and prevent abuse.
+4. [ ] Implement sales reporting using an optimized **materialized view** and window slicing strategy
+5. [ ] Add retry mechanism and/or dead letter queue for handling failed transaction attempts gracefully.
+6. [ ] Implement structured logging while ensuring no sensitive transaction metadata is logged.
+
+
+
