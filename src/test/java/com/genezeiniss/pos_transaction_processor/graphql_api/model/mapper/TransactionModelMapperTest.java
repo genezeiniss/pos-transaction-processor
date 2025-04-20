@@ -48,9 +48,8 @@ public class TransactionModelMapperTest {
         var saleRequest = SaleFixture.stubSaleRequest();
         saleRequest.setPrice("invalid-price");
 
-        assertThrows(MappingException.class, () -> {
-            transactionProcessorModelMapper.mapSaleRequestToTransaction(saleRequest);
-        });
+        assertThrows(MappingException.class,
+                () -> transactionProcessorModelMapper.mapSaleRequestToTransaction(saleRequest));
     }
 
     @Test
@@ -60,9 +59,8 @@ public class TransactionModelMapperTest {
         var saleRequest = SaleFixture.stubSaleRequest();
         saleRequest.setPaymentMethod("CREDIT_CARD");
 
-        var exception = assertThrows(MappingException.class, () -> {
-            transactionProcessorModelMapper.mapSaleRequestToTransaction(saleRequest);
-        });
+        var exception = assertThrows(MappingException.class,
+                () -> transactionProcessorModelMapper.mapSaleRequestToTransaction(saleRequest));
 
         assertEquals("Unsupported payment methods: CREDIT_CARD", exception.getCause().getMessage(), "exception message");
     }
