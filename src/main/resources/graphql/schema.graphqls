@@ -35,5 +35,5 @@ type Mutation {
 }
 
 type Query {
-    getSalesReport(startDateTime: DateTime!, endDateTime: DateTime!): [SalesReportResponse]!
+    getSalesReport(request: SalesReportRequest!): [SalesReportResponse]!
 }

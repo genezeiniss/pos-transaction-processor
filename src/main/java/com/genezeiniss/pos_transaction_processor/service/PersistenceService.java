@@ -18,6 +18,8 @@ public class PersistenceService {
     private final TransactionRepository transactionRepository;
     private final TransactionMetadataRepository transactionMetadataRepository;
 
+    // todo: what should be a behaviour in case of failure?
+    //  Consider implementation of retry mechanism / dead letter queue for failed transactions
     @Async
     @Transactional
     public void persistTransaction(Transaction transaction, List<TransactionMetadata> transactionMetadata) {

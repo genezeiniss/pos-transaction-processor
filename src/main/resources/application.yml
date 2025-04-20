@@ -18,6 +18,7 @@ spring:
       path: /graphiql
     path: /graphql
 
+# todo: move payment method modifiers to a configuration service
 payment-method-modifiers:
   cash:
     points-multiplier: 0.05
