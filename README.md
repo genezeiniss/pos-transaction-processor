@@ -7,15 +7,15 @@ maintain profitability.
 Designed for integration across physical stores and online platforms for seamless transactions.
 
 ---
-
 ## Table of Contents
 
-- [Goals and Objectives](#-goals-and-objectives)
-- [Tech Stack](#-tech-stack)
-- [Project Scope](#-project-scope)
-- [Core Feature: Transaction Modifier Engine](#-core-feature-transaction-modifier-engine)
-- [Application Setup Guide](#-application-setup-guide)
-- [Next Steps](#-next-steps)
+- [Goals and Objectives](#goals-and-objectives)
+- [Tech Stack](#tech-stack)
+- [Project Scope](#project-scope)
+- [Core Feature: Transaction Modifier Engine](#core-feature-transaction-modifier-engine)
+- [Application Setup Guide](#application-setup-guide)
+- [Running Integration Tests](#running-integration-tests)
+- [Next Steps](#next-steps)
 
 ---
 ## Goals and Objectives
@@ -26,7 +26,6 @@ Designed for integration across physical stores and online platforms for seamles
 4. Support easy extension and high concurrency.
 
 ---
-
 ## Tech Stack
 
 - **Language**: Java
@@ -53,7 +52,6 @@ Designed for integration across physical stores and online platforms for seamles
 - User authentication (unless specified in the future).
 
 ---
-
 ## Core Feature: Transaction Modifier Engine
 
 ### Input Fields
@@ -103,7 +101,6 @@ Designed for integration across physical stores and online platforms for seamles
 - Sensitive fields such as `bankAccountNumber` and `chequeNumber` are **encrypted** (TBD).
 
 ---
-
 ## Application Setup Guide
 
 ### Prerequisites
@@ -134,7 +131,7 @@ Designed for integration across physical stores and online platforms for seamles
    ./start-dev.sh
 ```
 
-This will automatically:
+This will:
 
 * Start a PostgreSQL container
 * Run database migrations (Liquibase)
@@ -145,7 +142,32 @@ This will automatically:
 
 ---
 
-## 🛠️ Next Steps
+## Running Integration Tests
+
+To execute integration tests (classes ending with IT):
+
+### Option 1: Using the development script (recommended)
+
+```bash
+   ./start-dev.sh --test
+```
+
+This will:
+
+* Start a dedicated test PostgreSQL container (on port 5433)
+* Run migrations on the test database
+* Generate jOOQ classes for test environment
+* Execute all integration tests
+* Clean up the test container automatically
+
+### Option 2: Manual execution
+
+```bash
+   mvn verify -Pintegration-tests 
+```
+---
+
+## Next Steps
 
 1. [ ] Enhance `AdditionalItem` to securely handle fields like `bankAccountNumber` and `chequeNumber` by implementing
    field-level encryption.
