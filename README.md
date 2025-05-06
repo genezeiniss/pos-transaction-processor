@@ -117,7 +117,7 @@ Designed for integration across physical stores and online platforms for seamles
 ```
 
 ```bash
-   cd {project directory}
+   cd pos-transaction-processor
 ```
 
 2. Make the script executable
